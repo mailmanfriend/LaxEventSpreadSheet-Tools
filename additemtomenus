@@ -1,0 +1,10 @@
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("LAX Event Tools")
+    .addItem("Edit Assigned Team Member", "showSidebar")
+    .addItem("What's Happening Today", "jumpToTodayOrNext")
+    .addItem("Sort By Date+Time", "sortLAXEventsSheet")
+    .addItem("Print Days of the Week", "updateDaysOfWeek")
+    .addItem("Add Black Bars Between Each Week", "insertBlackRowsBetweenWeeks")
+    .addToUi();
+}
