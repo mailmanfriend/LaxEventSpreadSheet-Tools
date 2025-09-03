@@ -1,0 +1,11 @@
+function sortLAXEventsSheet(){
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const startRow = 2; // Assuming row 1 is headers
+  const range = sheet.getDataRange(); // Adjust if needed to a specific range
+  const numRows = range.getNumRows();
+  const numCols = range.getNumColumns();
+  
+  // Sort by Start Time (column I = 9), then Date (column C = 3)
+  sheet.getRange(startRow, 1, numRows - 1, numCols)
+       .sort([{ column: 3, ascending: true }, { column: 9, ascending: true }]);
+}
