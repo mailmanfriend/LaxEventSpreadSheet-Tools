@@ -1,0 +1,21 @@
+function updateDaysOfWeek() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var lastRow = sheet.getLastRow();
+  
+  // Get dates from column H starting at row 2.
+  var dates = sheet.getRange("C2:C" + lastRow).getValues();
+  
+  // Process each date to get the day of the week.
+  var dayNames = dates.map(function(row) {
+    var d = row[0];
+    if (d instanceof Date) {
+      // Format the date as a full day name, e.g., "Monday".
+      return [Utilities.formatDate(d, Session.getScriptTimeZone(), "EEEE")];
+    } else {
+      return [""];
+    }
+  });
+  
+  // Set the results in column C starting at row 2.
+  sheet.getRange("D2:D" + lastRow).setValues(dayNames);
+}
