@@ -1,0 +1,175 @@
+function emailSendOnFormSubmit(e) {
+  // Retrieve the active form and get its responses.
+  var form = FormApp.getActiveForm();
+  var responses = form.getResponses().pop().getItemResponses();
+
+    var response25 = responses[25] ? responses[25].getResponse() : null;
+
+
+  // Get the respondent's email from the latest form response.
+  var allResponses = form.getResponses();
+  var latestResponse = allResponses[allResponses.length - 1];
+  var email = latestResponse.getRespondentEmail();
+
+  // Retrieve some responses for later processing.
+  var firstWord = String(responses[8].getResponse());
+  var secondWord = firstWord.toUpperCase();
+
+  // For demonstration, we're using the first response for both lastName and firstName.
+  var lastName = String(responses[0].getResponse());
+  var firstName = String(responses[0].getResponse());
+
+  // Helper function: returns first letter of the second word in lastName.
+  function getFirstLetterOfSecondWord(lastName) {
+    if (lastName.includes(' ')) {
+      var words = lastName.split(' ');
+      return words[1].charAt(0);
+    } else {
+      return "";
+    }
+  }
+
+  // Helper function: returns the first word in firstName.
+  function getFirstWord(firstName) {
+    if (firstName.includes(' ')) {
+      var words = firstName.split(' ');
+      return words[0];
+    } else {
+      return firstName;
+    }
+  }
+
+  var firstLetter = getFirstLetterOfSecondWord(lastName);
+  var primaryPocFirstName = getFirstWord(firstName);
+
+  var place = String(responses[10].getResponse());
+  var eventLocation = place.toUpperCase()
+  //var eventLocation = placeUpper
+  //var eventLocation = String(eventLocation).toUpperCase
+
+  // Build the email subject (title).
+  var title = eventLocation + ": " + primaryPocFirstName + " " + firstLetter + ".  - " + responses[2].getResponse();
+
+
+
+  // Create Date objects from responses.
+  var startTime = new Date(responses[4].getResponse() + " " + responses[5].getResponse());
+  var endTime = new Date(responses[4].getResponse() + " " + responses[6].getResponse());
+
+  // Helper: Convert military time (HH:MM) to standard time.
+  function militaryToStandardTime(militaryTime) {
+    if (!/^\d{2}:\d{2}$/.test(militaryTime)) {
+      return "Invalid military time format";
+    }
+    var parts = militaryTime.split(":");
+    var hours = parseInt(parts[0], 10);
+    var minutes = parts[1];
+    if (hours > 23) {
+      hours %= 24;
+    }
+    var period = hours < 12 ? "AM" : "PM";
+    if (hours > 12) {
+      hours -= 12;
+    } else if (hours === 0) {
+      hours = 12;
+    }
+    return hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + " " + period;
+  }
+
+  var newStartTime = militaryToStandardTime(responses[5].getResponse());
+  var newEndTime = militaryToStandardTime(responses[6].getResponse());
+
+  // Build the HTML email body dynamically.
+ var lines = [];
+lines.push("<b>Email:</b> " + (email || ""));
+lines.push("<b>Primary POC:</b> " + (responses[0].getResponse() || ""));
+lines.push("<b>Secondary POC:</b> " + (responses[1].getResponse() || ""));
+lines.push("<b>Event Name:</b> " + (responses[2].getResponse() || ""));
+lines.push("<b>Start Date For Event:</b> " + (responses[3].getResponse() || ""));
+lines.push("<b>End Date For Event:</b> " + (responses[4].getResponse() || ""));
+lines.push("<b>Start Time:</b> " + ((newStartTime && newStartTime !== "Invalid military time format") ? newStartTime : ""));
+lines.push("<b>End Time:</b> " + ((newEndTime && newEndTime !== "Invalid military time format") ? newEndTime : ""));
+lines.push("<b>Requesting Team:</b> " + (responses[7].getResponse() || ""));
+lines.push("<b>Anticipated Headcount:</b> " + (responses[8].getResponse() || ""));
+lines.push("<b>Event Type:</b> " + (responses[9].getResponse() || ""));
+lines.push("<b>Event Location(s):</b> " + (eventLocation || ""));
+lines.push("<b>Requested Layout:</b> " + (responses[11].getResponse() || ""));
+lines.push("<b>External Guests?:</b> " + (responses[12].getResponse() || ""));
+
+if (responses[13].getResponse() === "Yes, a vendor, providing a service, will be in attendance"){
+
+lines.push("<b>External Vendors?:</b> " + (responses[13].getResponse() || ""));
+lines.push("<b>Briefly describe the services the vendor will provide:</b> " + (responses[14].getResponse() || ""));
+lines.push("<b>Please list the name(s) of vendor(s):</b> " + (responses[15].getResponse() || ""));
+lines.push("<b>Will the outside vendor be providing a vehicle onto campus outside of regular campus parking?</b> " + (responses[16].getResponse() || ""));
+lines.push("<b>Will the outside vendor provide food?</b> " + (responses[17].getResponse() || ""));
+lines.push("<b>Will there be a heating element provided by this vendor?</b> " + (responses[18].getResponse() || ""));
+lines.push("<b>Is this vendor a Mom/Pop (single owner/operator)?</b> " + (responses[19].getResponse() || ""));
+lines.push("<b>Is this vendor related to video production or photography?</b> " + (responses[20].getResponse() || ""));
+lines.push("<b>AV Needs:</b> " + (responses[21].getResponse() || ""));
+lines.push("<b>Video Conferencing Platforms?</b> " + (responses[22].getResponse() || ""));
+lines.push("<b>Mics Needed:</b> " + (responses[23].getResponse() || ""));
+lines.push("<b>Online Platforms?</b> " + (responses[24].getResponse() || ""));
+lines.push("<b>Will you need Catering for this event?</b> " + (responses[25].getResponse() || ""));
+lines.push("<b>List additional event or supply needs:</b> " + (responses[26].getResponse() || ""));
+lines.push("<b>Anything else we should know?</b> " + (responses[27].getResponse() || ""));
+
+
+
+}
+
+else {
+lines.push("<b>External Vendors?:</b> " + (responses[13].getResponse() || ""));
+lines.push("<b>AV Needs:</b> " + (responses[14].getResponse() || ""));
+lines.push("<b>Video Conferencing Platforms?:</b> " + (responses[15].getResponse() || ""));
+lines.push("<b>Mics Needed:</b> " + (responses[16].getResponse() || ""));
+lines.push("<b>Online Platforms?:</b> " + (responses[17].getResponse() || ""));
+lines.push("<b>Will you need Catering for this event?</b> " + ((responses[18].getResponse()) || ""));
+lines.push("<b>List additional event or supply needs:</b> " + (responses[19].getResponse() || ""));
+lines.push("<b>Anything else we should know?</b> " + (responses[20].getResponse() || ""));
+}
+  
+ 
+  // Join the lines with HTML line breaks.
+  var htmlBody = lines.join("<br>");
+
+  // Define recipients: sending to both laxevents@riotgames.com and the respondent's email.
+  var emailAddress = "laxevents@riotgames.com";
+  var recipientArray = [emailAddress, email];
+var response18 = responses[18]?.getResponse()?.toString().toLowerCase();
+var response25 = responses[25]?.getResponse()?.toString().toLowerCase();
+
+if (response18 === "yes" || response25 === "yes") {
+  recipientArray.push("ext.jeperez@riotgames.com", "ext.algonzalez@riotgames.com");
+}
+      if (responses[13].getResponse() === "Yes, a vendor, providing a service, will be in attendance"){
+        recipientArray.push("ncoluzzi@riotgames.com")
+      }
+var recipients = recipientArray.join(",");
+
+
+  console.log(htmlBody);
+
+var maxSubjectLength = 200;
+if (title.length > maxSubjectLength) {
+  title = title.substring(0, maxSubjectLength - 3) + "...";
+}
+var subject = title;
+var me = Session.getActiveUser().getEmail();
+var aliases = GmailApp.getAliases()
+console.log(aliases)
+var stringalias = aliases[0].toString()
+console.log(stringalias)
+
+  // Send the email using MailApp.sendEmail with both plain text and HTML body.
+  // Plain text fallback is created by stripping HTML tags (if needed).
+  var plainTextBody = htmlBody.replace(/<[^>]+>/g, "");
+
+  console.log(plainTextBody)
+
+  GmailApp.sendEmail(recipients, subject, plainTextBody, {
+    htmlBody: htmlBody,
+    from: stringalias,
+    name: stringalias
+  });
+}
